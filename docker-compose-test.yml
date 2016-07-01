@@ -1,0 +1,25 @@
+web:
+  image: ymian/webapp
+  links:
+    - galera-lb:galera-lb
+  volumes_from:
+    - web-data
+  ports:
+    - "3000:3000"
+  labels:
+    io.rancher.sidekicks: web-data
+web-data:
+  image: busybox
+  volumes:
+    - /var/logs
+  labels:
+    io.rancher.container.start_once: 'true'
+galera-lb:
+  image: mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=test
+    - MYSQL_DATABASE=wise2c
+    - MYSQL_USER=wise2c
+    - MYSQL_PASSWORD=test
+  volumes:
+    - /opt/mysql:/var/lib/mysql
