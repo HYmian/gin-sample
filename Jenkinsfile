@@ -4,8 +4,8 @@ node {
 
     stage 'build'
     def Go = tool name: 'Go1.6', type: 'org.jenkinsci.plugins.golang.GolangInstallation'
-    withEnv("GOROOT=${Go}", "GOPATH=${env.JENKINS_HOME}/Go") {
-        withEnv("PATH=${env.GOROOT}/bin:${env.GOPATH}/bin:${env.PATH}") {
+    withEnv(["GOROOT=${Go}", "GOPATH=${env.JENKINS_HOME}/Go"]) {
+        withEnv(["PATH=${env.GOROOT}/bin:${env.GOPATH}/bin:${env.PATH}"]) {
         sh "go get -u github.com/astaxie/beego/orm"
         sh "go get -u github.com/go-martini/martini"
         sh "go get -u github.com/golang/glog"
