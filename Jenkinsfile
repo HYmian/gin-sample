@@ -14,6 +14,7 @@ node {
         
         sh "go test"
         sh "go build"
+        }
     }
 
     stage 'pack'
