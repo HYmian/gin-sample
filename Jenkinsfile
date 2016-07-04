@@ -25,8 +25,7 @@ node {
     sh "./test-docker-compose.sh"
 
     stage 'deploy'
-    sh "rancher-compose up -d > rancher-compose.log"
-    sh "./test-rancher-compose.sh"
+    sh "rancher-compose up -p webDemo -d"
 
     stage 'publish'
     docker.withRegistry('https://index.docker.io/v1/', '505') {
