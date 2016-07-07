@@ -2,10 +2,11 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
-		<title>{{.Title}}</title>
+		<title>Wise2c Test Page</title>
 	</head>
 	<body>
-		{{range .Items}}<div>{{ . }}</div>{{else}}<div><strong>no rows</strong></div>{{end}}
+		{{range .Pages}}<div>{{ .Title }}</div>
+		<div>{{ .Item }}</div>
+		{{else}}<div><strong>no rows</strong></div>{{end}}
 	</body>
 </html>
-

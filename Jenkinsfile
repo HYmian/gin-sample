@@ -11,6 +11,7 @@ node {
         sh "go get -u github.com/golang/glog"
         sh "go get -u github.com/martini-contrib/render"
         sh "go get -u github.com/go-sql-driver/mysql"
+		sh "go get -u github.com/martini-contrib/binding"
         
         sh "go test"
         sh "go build"
@@ -23,6 +24,8 @@ node {
     stage 'test'
     sh "docker-compose -f docker-compose-test.yml up -d"
     sh "./test-docker-compose.sh"
+	sh "docker-compose -f docker-compose-test.yml stop"
+	sh "docker-compose -f docker-compose-test.yml -f"
 
     stage 'deploy'
     sh "rancher-compose up -p webDemo -d"
@@ -31,5 +34,5 @@ node {
     docker.withRegistry('https://index.docker.io/v1/', '505') {
         im.push('latest')
     }
-    echo "perfect"
+    echo "yeah!"
 }

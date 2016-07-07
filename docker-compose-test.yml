@@ -8,6 +8,10 @@ web:
     - "3000:3000"
   labels:
     io.rancher.sidekicks: web-data
+  environment:
+    - MYSQL_USER=wise2c
+    - MYSQL_PASSWORD=test
+    - MYSQL_DATABASE=wise2c
 web-data:
   image: busybox
   volumes:

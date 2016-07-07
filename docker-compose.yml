@@ -1,13 +1,15 @@
 web:
   image: ymian/webapp
   external_links:
-    - galera/galera-lb:galera-lb
+    - ${SERVICE}:galera-lb
   volumes_from:
     - web-data
-  ports:
-    - "3000:3000"
   labels:
     io.rancher.sidekicks: web-data
+  environment:
+    - MYSQL_USER=${USER}
+    - MYSQL_PASSWORD=${PASSWORD}
+    - MYSQL_DATABASE=${DATABASE}
 web-data:
   image: busybox
   volumes:
