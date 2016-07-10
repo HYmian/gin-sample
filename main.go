@@ -62,6 +62,7 @@ func GetPages(req *http.Request, r render.Render) {
 	num, err := o.Raw("select title, item from page").Values(&maps)
 	if err != nil {
 		r.Text(500, err.Error())
+		return
 	}
 
 	pages := &Pages{}
