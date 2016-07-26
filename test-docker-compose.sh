@@ -1,3 +1,3 @@
 #! /bin/bash
 
-curl -XGET http://192.168.0.101:3000
+curl -XGET http://localhost:3000
