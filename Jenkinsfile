@@ -13,7 +13,7 @@ node {
         sh "go get -u github.com/go-sql-driver/mysql"
 	sh "go get -u github.com/martini-contrib/binding"
         
-        sh "go test" 
+        sh "go test"
         sh "go build"
         }
     }
