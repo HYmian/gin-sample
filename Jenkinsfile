@@ -28,7 +28,7 @@ node {
 	sh "docker-compose -f docker-compose-test.yml -f"
 
     stage 'deploy'
-    sh "rancher-compose up -p webDemo -d"
+    sh "rancher-compose -p webDemo -e env.conf up -d"
 
     stage 'publish'
     docker.withRegistry('https://index.docker.io/v1/', '505') {
