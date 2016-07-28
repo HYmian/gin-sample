@@ -17,6 +17,7 @@ node {
         sh "go build"
         }
     }
+    input '构建完成，是否继续打包？'
 
     stage 'pack'
     def im = docker.build('ymian/webapp', '.')
