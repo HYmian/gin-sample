@@ -1,4 +1,4 @@
-FROM golang
+FROM centos:7
 
 WORKDIR /var
 

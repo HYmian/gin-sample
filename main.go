@@ -3,8 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/go-martini/martini"
@@ -24,34 +27,63 @@ type Page struct {
 	Item  string `json:"item" binding:"required"`
 }
 
+var (
+	havedb = flag.Bool("havedb", false, "demo connect to a DB if true")
+)
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 func main() {
 	flag.Parse()
 
 	m := martini.Classic()
 	m.Use(render.Renderer())
 
-	host := "galera-lb"
-	user := os.Getenv("MYSQL_USER")
-	passwd := os.Getenv("MYSQL_PASSWORD")
-	database := os.Getenv("MYSQL_DATABASE")
+	if *havedb {
+		host := "galera-lb"
+		user := os.Getenv("MYSQL_USER")
+		passwd := os.Getenv("MYSQL_PASSWORD")
+		database := os.Getenv("MYSQL_DATABASE")
 
-	if err := orm.RegisterDataBase("default",
-		"mysql",
-		fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8",
-			user,
-			passwd,
-			host,
-			database,
-		),
-		30,
-	); err != nil {
-		glog.Fatalf("connect to mysql error: %s", err.Error())
+		if err := orm.RegisterDataBase("default",
+			"mysql",
+			fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8",
+				user,
+				passwd,
+				host,
+				database,
+			),
+			30,
+		); err != nil {
+			glog.Fatalf("connect to mysql error: %s", err.Error())
+		}
+
+		m.Get("/", GetPages)
+		m.Post("/", binding.Bind(Pages{}), PostPage)
 	}
-
-	m.Get("/", GetPages)
-	m.Post("/", binding.Bind(Pages{}), PostPage)
+	m.Get("/stress/:value", GetStress)
 
 	m.Run()
+}
+
+func GetStress(param martini.Params) (int, string) {
+	v := param["value"]
+	iv, err := strconv.ParseUint(v, 10, 64)
+
+	if err != nil {
+		iv = 50 * 1024
+	} else {
+		iv = iv * 1024
+	}
+
+	bs := make([]byte, iv)
+	for i := uint64(0); i < iv; i++ {
+		bs[i] = byte(rand.Intn(95) + 32)
+	}
+
+	return 200, string(bs)
 }
 
 func GetPages(req *http.Request, r render.Render) {
