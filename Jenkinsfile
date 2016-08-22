@@ -3,19 +3,11 @@ node {
     git changelog: false, poll: false, url: 'https://github.com/HYmian/webDemo.git'
 
     stage 'build'
-    def Go = tool name: 'Go1.6', type: 'org.jenkinsci.plugins.golang.GolangInstallation'
-    withEnv(["GOROOT=${Go}", "GOPATH=${env.JENKINS_HOME}/Go"]) {
-        withEnv(["PATH=${env.GOROOT}/bin:${env.GOPATH}/bin:${env.PATH}"]) {
-        sh "go get -u github.com/astaxie/beego/orm"
-        sh "go get -u github.com/go-martini/martini"
-        sh "go get -u github.com/golang/glog"
-        sh "go get -u github.com/martini-contrib/render"
-        sh "go get -u github.com/go-sql-driver/mysql"
-	sh "go get -u github.com/martini-contrib/binding"
-        
-        sh "go test"
-        sh "go build"
-        }
+    docker.image("golang:1.7-alpine").inside {
+        echo pwd()
+        git 'https://github.com/HYmian/webDemo.git'
+        sh 'mv $PWD/vendor/* /go/src/'
+        sh 'go build'
     }
     input '构建完成，是否继续打包？'
 
