@@ -3,7 +3,7 @@ node {
     git changelog: false, poll: false, url: 'https://github.com/HYmian/webDemo.git'
 
     stage 'build'
-    docker.image("golang:1.7-alpine").inside {
+    docker.image("golang:1.7").inside {
         echo pwd()
         git 'https://github.com/HYmian/webDemo.git'
         sh 'mv $PWD/vendor/* /go/src/'
