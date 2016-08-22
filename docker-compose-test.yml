@@ -19,7 +19,7 @@ web-data:
   labels:
     io.rancher.container.start_once: 'true'
 galera-lb:
-  image: mysql
+  image: mysql:5.7
   environment:
     - MYSQL_ROOT_PASSWORD=test
     - MYSQL_DATABASE=wise2c

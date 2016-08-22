@@ -1,3 +1,3 @@
 #! /bin/bash
 
-docker run --rm --net=host golang curl localhost:3000
+docker run --rm --net=host centos:7 curl localhost:3000
