@@ -1,7 +1,5 @@
 web:
-  image: ymian/webapp
-  external_links:
-    - ${SERVICE}:galera-lb
+  image: 10.80.6.50/wisebuild/webdemo
   volumes_from:
     - web-data
   labels:
