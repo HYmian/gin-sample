@@ -13,7 +13,7 @@ pipeline {
                 containers:
                 - name: golang
                   image: golang:1.11
-                  workingDir: /home/jenkins
+                  workingDir: /go/src/github.com/HYmian/webDemo
                   command:
                   - cat
                   tty: true
@@ -28,12 +28,6 @@ pipeline {
     }
 
     stages {
-        stage('Git'){
-            steps{
-                git branch: 'master', credentialsId: '', url: 'https://github.com/HYmian/webDemo.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 container('golang') {
