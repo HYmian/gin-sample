@@ -37,6 +37,7 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
+                    sh 'echo $PWD'
                     sh 'go build'
                 }
             }
