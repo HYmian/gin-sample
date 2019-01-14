@@ -12,13 +12,13 @@ pipeline {
             spec:
             containers:
             - name: golang
-                image: golang:1.11.4
+                image: "go:1.11"
                 workingDir: /home/jenkins
                 command:
                 - cat
                 tty: true
             - name: kaniko
-                image: registry.cn-beijing.aliyuncs.com/acs-sample/jenkins-slave-kaniko:0.6.0
+                image: "registry.cn-beijing.aliyuncs.com/acs-sample/jenkins-slave-kaniko:0.6.0"
                 workingDir: /home/jenkins
                 command:
                 - cat
