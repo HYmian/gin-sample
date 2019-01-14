@@ -1,31 +1,45 @@
-node {
-    stage 'fetch'
-    git changelog: false, poll: false, url: 'https://github.com/HYmian/webDemo.git'
+pipeline {
+	agent {
+		kubernetes {
+			label 'jenkins-pod'
+			defaultContainer 'jnlp'
+			yaml """
+			apiVersion: v1
+			kind: Pod
+			metadata:
+			labels:
+				app: jenkins-slave-pod
+			spec:
+			containers:
+			- name: golang
+				image: golang:1.11.4
+				workingDir: /home/jenkins
+				command:
+				- cat
+				tty: true
+			- name: kaniko
+				image: registry.cn-beijing.aliyuncs.com/acs-sample/jenkins-slave-kaniko:0.6.0
+				workingDir: /home/jenkins
+				command:
+				- cat
+				tty: true
+			"""
+		}
+	}
 
-    stage 'build'
-    docker.image("golang:1.7").inside {
-        echo pwd()
-        git 'https://github.com/HYmian/webDemo.git'
-        sh 'mv $PWD/vendor/* /go/src/'
-        sh 'go build'
-    }
-    input '构建完成，是否继续打包？'
+	stages {
+		stage('Git'){
+			steps{
+				git branch: 'master', credentialsId: '', url: 'https://github.com/HYmian/webDemo.git'
+			}
+		}
 
-    stage 'pack'
-    def im = docker.build('ymian/webapp', '.')
-    
-    stage 'test'
-    sh "docker-compose -f docker-compose-test.yml up -d"
-    sh "./test-docker-compose.sh"
-    sh "docker-compose -f docker-compose-test.yml stop"
-    sh "docker-compose -f docker-compose-test.yml rm -f"
-
-    stage 'deploy'
-    sh "rancher-compose -p webDemo -e env.conf up -d"
-
-    stage 'publish'
-    docker.withRegistry('https://index.docker.io/v1/', '505') {
-        im.push('latest')
-    }
-    echo "yeah!"
+		stage('Build') {
+			steps {
+				container('golang') {
+					sh 'go build'
+				}
+			}
+		}
+  	}
 }
