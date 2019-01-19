@@ -13,7 +13,6 @@ pipeline {
                 containers:
                 - name: golang
                   image: golang:1.11
-                  workingDir: /go/src/github.com/HYmian
                   command:
                   - cat
                   tty: true
@@ -33,6 +32,8 @@ pipeline {
                 container('golang') {
                     git url: 'https://github.com/HYmian/webDemo.git'
                     sh """
+                    mkdir -p /go/src/github.com/HYmian
+                    ln -s `pwd` /go/src/github.com/HYmian/webDemo
                     cd /go/src/github.com/HYmian/webDemo && go build
                     """
                 }
