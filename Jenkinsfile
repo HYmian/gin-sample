@@ -10,6 +10,8 @@ pipeline {
               labels:
                 app: jenkins-slave-pod
             spec:
+                nodeSelector:
+                  workload_type: spot
                 containers:
                 - name: golang
                   image: golang:1.11
