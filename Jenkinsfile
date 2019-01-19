@@ -13,7 +13,6 @@ pipeline {
                 containers:
                 - name: golang
                   image: golang:1.11
-                  workingDir: /go/src/github.com/HYmian/webDemo
                   command:
                   - cat
                   tty: true
@@ -31,8 +30,12 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
-                    sh 'echo $PWD'
-                    sh 'go build'
+                    git url: 'https://github.com/HYmian/webDemo.git'
+                    sh """
+                    mkdir -p /go/src/github.com/HYmian
+                    ln -s `pwd` /go/src/github.com/HYmain/webDemo
+                    cd /go/src/github.com/hashicorp/webDemo && go build
+                    """
                 }
             }
         }
