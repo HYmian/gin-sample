@@ -55,7 +55,7 @@ pipeline {
         stage('Image Build And Publish'){
             steps{
                 container("kaniko") {
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --destination ymian/webDemo"
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --destination ymian/webdemo"
                 }
             }
         }
