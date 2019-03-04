@@ -25,7 +25,7 @@ pipeline {
                 tty: true
                 volumeMounts:
                 - name: ymian
-                  mountPath: /home/jenkins/.docker
+                  mountPath: /root/.docker
               volumes:
               - name: ymian
                 secret:
