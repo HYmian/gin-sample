@@ -25,8 +25,7 @@ pipeline {
                 tty: true
                 volumeMounts:
                 - name: ymian
-                  mountPath: /root/.docker
-                  readOnly: true
+                  mountPath: ~/.docker
               volumes:
               - name: ymian
                 secret:
