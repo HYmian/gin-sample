@@ -23,12 +23,9 @@ pipeline {
                 command:
                 - cat
                 tty: true
-                env:
-                - name: DOCKER_CONFIG
-                  value: /kaniko
                 volumeMounts:
                 - name: ymian
-                  mountPath: /kaniko
+                  mountPath: /root/.docker
                   readOnly: true
               volumes:
               - name: ymian
