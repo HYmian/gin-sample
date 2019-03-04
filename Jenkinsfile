@@ -10,19 +10,33 @@ pipeline {
               labels:
                 app: jenkins-slave-pod
             spec:
-                nodeSelector:
-                  workload_type: spot
-                containers:
-                - name: golang
-                  image: golang:1.11
-                  command:
-                  - cat
-                  tty: true
-                - name: kaniko
-                  image: registry.cn-beijing.aliyuncs.com/acs-sample/jenkins-slave-kaniko:0.6.0
-                  command:
-                  - cat
-                  tty: true
+              nodeSelector:
+                workload_type: spot
+              containers:
+              - name: golang
+                image: golang:1.11
+                command:
+                - cat
+                tty: true
+              - name: kaniko
+                image: registry.cn-beijing.aliyuncs.com/acs-sample/jenkins-slave-kaniko:0.6.0
+                command:
+                - cat
+                tty: true
+                env:
+                - name: DOCKER_CONFIG
+                  value: /kaniko
+                volumeMounts:
+                - name: ymian
+                  mountPath: /kaniko
+                  readOnly: true
+              volumes:
+              - name: ymian
+                secret:
+                  secretName: ymian
+                  items:
+                  - key: .dockerconfigjson
+                    path: config.json
             """
         }
     }
@@ -44,7 +58,7 @@ pipeline {
         stage('Image Build And Publish'){
             steps{
                 container("kaniko") {
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --no-push"
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --destination ymian/webDemo"
                 }
             }
         }
