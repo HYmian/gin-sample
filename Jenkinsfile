@@ -67,7 +67,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 container("kubectl") {
-                    withKubeConfig([credentialsId: 'm0', serverUrl: 'https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT']) {
+                    withKubeConfig(
+                        [
+                            credentialsId: 'm0', 
+                            serverUrl: 'https://kubernetes.default.svc.cluster.local'
+                        ]
+                    ) {
                         sh 'kubectl get node'
                     }
                 }
