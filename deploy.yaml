@@ -2,13 +2,13 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: webDemo
-  name: webDemo
+    app: webdemo
+  name: webdemo
 spec:
   replicas: 4
   selector:
     matchLabels:
-      app: nginx
+      app: webdemo
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -17,12 +17,12 @@ spec:
   template:
     metadata:
       labels:
-        app: webDemo
+        app: webdemo
     spec:
       containers:
-      - image: ymian/webDemo
+      - image: ymian/webdemo
         imagePullPolicy: Always
-        name: webDemo
+        name: webdemo
         ports:
         - containerPort: 3000
           protocol: TCP
@@ -37,8 +37,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: webDemo
-  name: webDemo
+    app: webdemo
+  name: webdemo
 spec:
   ports:
   - name: http
@@ -46,4 +46,4 @@ spec:
     protocol: TCP
     targetPort: 3000
   selector:
-    app: webDemo
+    app: webdemo
