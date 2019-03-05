@@ -27,7 +27,7 @@ pipeline {
                 - name: ymian
                   mountPath: /root/.docker
               - name: kubectl
-                image: buoyantio/kubectl:v1.12.2
+                image: roffe/kubectl:v1.13.2
                 command:
                 - cat
                 tty: true
