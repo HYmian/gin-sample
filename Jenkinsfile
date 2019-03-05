@@ -78,7 +78,7 @@ pipeline {
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
                     ) {
-                        sh 'kubectl get node'
+                        sh 'kubectl apply -f `pwd`/deploy.yaml'
                     }
                 }
             }
