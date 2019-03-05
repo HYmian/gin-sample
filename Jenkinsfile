@@ -51,12 +51,20 @@ pipeline {
             }
         }
 
-        stage('Image Build And Publish'){
-            steps{
+        stage('Image Build And Publish') {
+            steps {
                 container("kaniko") {
                     sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --destination ymian/webdemo"
                 }
             }
         }
-      }
+
+        stage('Deploy') {
+            steps {
+                withKubeConfig([credentialdId: 'm0-key', serverUrl: 'https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT']) {
+                    sh 'kubectl get no'
+                }
+            }
+        }
+    }
 }
