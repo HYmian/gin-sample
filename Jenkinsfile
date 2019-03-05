@@ -26,6 +26,11 @@ pipeline {
                 volumeMounts:
                 - name: ymian
                   mountPath: /root/.docker
+              - name: kubectl
+                image: buoyantio/kubectl:v1.12.2
+                command:
+                - cat
+                tty: true
               volumes:
               - name: ymian
                 secret:
@@ -61,8 +66,10 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                withKubeConfig([credentialsId: 'm0-key', serverUrl: 'https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT']) {
-                    sh 'kubectl get no'
+                container("kubectl") {
+                    withKubeConfig([credentialsId: 'm0-key', serverUrl: 'https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT']) {
+                        sh 'kubectl get no'
+                    }
                 }
             }
         }
