@@ -68,7 +68,7 @@ pipeline {
             steps {
                 container("kubectl") {
                     withKubeConfig([credentialsId: 'm0', serverUrl: 'https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_PORT_443_TCP_PORT']) {
-                        sh 'kubectl get no'
+                        sh 'kubectl get node'
                     }
                 }
             }
