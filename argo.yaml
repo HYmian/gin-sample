@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: automation-test-
+spec:
+  # entrypoint is the name of the template used as the starting point of the workflow
+  entrypoint: automation-test
+  # the 'ci-example' template accepts an parameter 'revision', with a default of 'master'.
+  # this can be overridden via argo CLI (e.g. `argo submit ci.yaml -p revision=0dea2d0`)
+  templates:
+  - name: automation-test
+    steps:
+    - - name: verify
+        template: verify
+    - - name: stress
+        template: stress
+  - name: verify
+    container:
+      image: ymian/busybox
+      command: [sh, -c]
+      args: ["
+        x=`curl http://webdemo:3000/stress/3 -w '%{size_download}' -so /dev/null`;
+        if [ $x -eq '3072' ]; 
+        then
+          exit 0;
+        else
+          exit 1;
+        fi
+      "]
+  - name: stress
+    container:
+      image: ymian/wrk
+      command: [./wrk, -t8, -c500, -d2m, --latency, http://webdemo:3000/stress/3]
