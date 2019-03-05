@@ -31,6 +31,11 @@ pipeline {
                 command:
                 - cat
                 tty: true
+              - name: busybox
+                image: ymian/busybox
+                command:
+                - cat
+                tty: true
               volumes:
               - name: ymian
                 secret:
@@ -75,6 +80,16 @@ pipeline {
                     ) {
                         sh 'kubectl get node'
                     }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                container("busybox") {
+                    sh """
+                    curl -d '{"message":"this is my first webhook"}' -H "Content-Type: application/json" -X POST webhook-gateway-svc.argo-events.svc.cluster.local:12000/foo
+                    """
                 }
             }
         }
