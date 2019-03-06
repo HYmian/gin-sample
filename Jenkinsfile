@@ -79,6 +79,7 @@ pipeline {
                         ]
                     ) {
                         sh 'kubectl apply -f `pwd`/deploy.yaml'
+                        sh 'kubectl wait --for=condition=Ready pod -l app=webdemo'
                     }
                 }
             }
