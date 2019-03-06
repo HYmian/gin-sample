@@ -5,8 +5,6 @@ metadata:
 spec:
   # entrypoint is the name of the template used as the starting point of the workflow
   entrypoint: automation-test
-  # the 'ci-example' template accepts an parameter 'revision', with a default of 'master'.
-  # this can be overridden via argo CLI (e.g. `argo submit ci.yaml -p revision=0dea2d0`)
   templates:
   - name: automation-test
     steps:
