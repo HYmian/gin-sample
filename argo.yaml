@@ -17,11 +17,12 @@ spec:
       image: ymian/busybox
       command: [sh, -c]
       args: ["
-        x=`curl http://webdemo:3000/stress/3 -w '%{size_download}' -so /dev/null`;
+        x=`curl http://webdemo.default.svc.cluster.local:3000/stress/3 -w '%{size_download}' -so /dev/null`;
         if [ $x -eq '3072' ]; 
         then
           exit 0;
         else
+          echo x=$x;
           exit 1;
         fi
       "]
