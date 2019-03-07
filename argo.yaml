@@ -29,4 +29,4 @@ spec:
   - name: stress
     container:
       image: ymian/wrk
-      command: [./wrk, -t8, -c500, -d2m, --latency, http://webdemo:3000/stress/3]
+      command: [./wrk, -t8, -c500, -d2m, --latency, http://webdemo.default.svc.cluster.local:3000/stress/3]
