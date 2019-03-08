@@ -20,6 +20,7 @@ spec:
         app: webdemo
     spec:
       containers:
+        # you can replace image to yours
       - image: ymian/webdemo
         imagePullPolicy: Always
         name: webdemo

@@ -39,6 +39,7 @@ pipeline {
               volumes:
               - name: ymian
                 secret:
+                  # you can replace secret to yours
                   secretName: ymian
                   items:
                   - key: .dockerconfigjson
@@ -64,7 +65,8 @@ pipeline {
         stage('Image Build And Publish') {
             steps {
                 container("kaniko") {
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo --destination ymian/webdemo"
+                    // you can replace `--destination=ymian/webdemo` to yours
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo"
                 }
             }
         }
@@ -74,6 +76,7 @@ pipeline {
                 container("kubectl") {
                     withKubeConfig(
                         [
+                            // you can replace `mo` to yours
                             credentialsId: 'm0', 
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
