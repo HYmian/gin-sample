@@ -66,7 +66,7 @@ pipeline {
             steps {
                 container("kaniko") {
                     // you can replace `--destination=ymian/webdemo` to yours
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` --destination=ymian/webdemo"
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/webdemo"
                 }
             }
         }
