@@ -52,7 +52,7 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
-                    git url: 'https://github.com/HYmian/webDemo.git'
+                    git url: 'https://github.com/HYmian/gin-sample.git'
                     sh """
                     go build
                     """
@@ -63,8 +63,8 @@ pipeline {
         stage('Image Build And Publish') {
             steps {
                 container("kaniko") {
-                    // you can replace `--destination=ymian/webdemo` to yours
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/webdemo"
+                    // you can replace `--destination=ymian/gin-sample` to yours
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/gin-sample"
                 }
             }
         }
@@ -80,7 +80,7 @@ pipeline {
                         ]
                     ) {
                         sh 'kubectl apply -f `pwd`/deploy.yaml'
-                        sh 'kubectl wait --for=condition=Ready pod -l app=webdemo --timeout=60s'
+                        sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
                     }
                 }
             }
