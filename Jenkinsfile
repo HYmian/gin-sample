@@ -14,7 +14,7 @@ pipeline {
                 workload_type: spot
               containers:
               - name: golang
-                image: golang:1.11
+                image: golang:1.12
                 command:
                 - cat
                 tty: true
@@ -54,9 +54,7 @@ pipeline {
                 container('golang') {
                     git url: 'https://github.com/HYmian/webDemo.git'
                     sh """
-                    mkdir -p /go/src/github.com/HYmian
-                    ln -s `pwd` /go/src/github.com/HYmian/webDemo
-                    cd /go/src/github.com/HYmian/webDemo && go build
+                    go build
                     """
                 }
             }
