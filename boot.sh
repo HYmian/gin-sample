@@ -11,4 +11,4 @@ fi
 #export MYSQL_USER=mian
 #export MYSQL_PASSWD=admin
 
-exec ./gin-sample -alsologtostderr=true -log_dir=./logs -v=2
+exec ./gin-sample -logtostderr -v 2
