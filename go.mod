@@ -2,14 +2,19 @@ module github.com/HYmian/gin-sample
 
 require (
 	github.com/astaxie/beego v1.11.1
-	github.com/codegangsta/inject v0.0.0-20150114235600-33e0aa1cb7c0 // indirect
-	github.com/go-martini/martini v0.0.0-20170121215854-22fa46961aab
+	github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3 // indirect
+	github.com/gin-gonic/gin v1.3.0
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/martini-contrib/binding v0.0.0-20160701174519-05d3e151b6cf
-	github.com/martini-contrib/render v0.0.0-20150707142108-ec18f8345a11
-	github.com/oxtoacart/bpool v0.0.0-20190227141107-8c4636f812cc // indirect
+	github.com/json-iterator/go v1.1.6 // indirect
+	github.com/mattn/go-isatty v0.0.7 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/ugorji/go v1.1.4 // indirect
 	google.golang.org/appengine v1.5.0 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 )
 
 replace (

@@ -10,10 +10,8 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/go-martini/martini"
+	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
-	"github.com/martini-contrib/binding"
-	"github.com/martini-contrib/render"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -36,10 +34,15 @@ func init() {
 }
 
 func main() {
+	defer glog.Flush()
 	flag.Parse()
 
-	m := martini.Classic()
-	m.Use(render.Renderer())
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
 
 	if *havedb {
 		host := "galera-lb"
@@ -60,16 +63,16 @@ func main() {
 			glog.Fatalf("connect to mysql error: %s", err.Error())
 		}
 
-		m.Get("/", GetPages)
-		m.Post("/", binding.Bind(Pages{}), PostPage)
+		r.GET("/", GetPages)
+		r.POST("/", PostPage)
 	}
-	m.Get("/stress/:value", GetStress)
+	r.GET("/stress/:value", GetStress)
 
-	m.Run()
+	r.Run("0.0.0.0:8080")
 }
 
-func GetStress(param martini.Params) (int, string) {
-	v := param["value"]
+func GetStress(c *gin.Context) {
+	v := c.Param("value")
 	iv, err := strconv.ParseUint(v, 10, 64)
 
 	if err != nil {
@@ -83,17 +86,17 @@ func GetStress(param martini.Params) (int, string) {
 		bs[i] = byte(rand.Intn(95) + 32)
 	}
 
-	return 200, string(bs)
+	c.String(http.StatusOK, string(bs))
 }
 
-func GetPages(req *http.Request, r render.Render) {
-	glog.Info(req.RequestURI)
+func GetPages(c *gin.Context) {
+	glog.Info(c.Request.RequestURI)
 
 	var maps []orm.Params
 	o := orm.NewOrm()
 	num, err := o.Raw("select title, item from page").Values(&maps)
 	if err != nil {
-		r.Text(500, err.Error())
+		c.String(http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -107,12 +110,12 @@ func GetPages(req *http.Request, r render.Render) {
 		pages.Pages = append(pages.Pages, p)
 	}
 
-	r.HTML(200, "index", pages)
-
+	c.HTML(http.StatusOK, "index", pages)
 }
 
-func PostPage(req *http.Request, pages Pages) (int, string) {
-	glog.Info(req.RemoteAddr)
+func PostPage(c *gin.Context) {
+	pages := &Pages{}
+	glog.Info(c.Request.RemoteAddr)
 
 	o := orm.NewOrm()
 	for _, i := range pages.Pages {
@@ -121,9 +124,10 @@ func PostPage(req *http.Request, pages Pages) (int, string) {
 			SetArgs(i.Title, i.Item).
 			Exec(); err != nil {
 			glog.Errorf("insert page (%s, %s) error", i.Title, i.Item)
-			return 500, "insert page error"
+			c.String(http.StatusInternalServerError, "insert page error")
 		}
 
 	}
-	return 200, ""
+
+	c.Status(http.StatusOK)
 }

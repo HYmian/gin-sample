@@ -8,7 +8,7 @@ pipeline {
             kind: Pod
             metadata:
               labels:
-                app: jenkins-slave-pod
+            #    app: jenkins-slave-pod
             spec:
               nodeSelector:
                 workload_type: spot
