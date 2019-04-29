@@ -9,6 +9,9 @@ pipeline {
             metadata:
               labels:
                 app: jenkins-slave-pod
+              annotation:
+                k8s.aliyun.com/eci-cpu: 2
+                k8s.aliyun.com/eci-memory: 4Gi
             spec:
               nodeSelector:
               #  workload_type: spot
