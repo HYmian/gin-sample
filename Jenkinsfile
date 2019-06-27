@@ -45,7 +45,7 @@ pipeline {
                   # you can replace secret to yours
                   secretName: ymian
                   items:
-                  - key: .dockerconfigjson
+                  - key: config.json
                     path: config.json
             """
         }
