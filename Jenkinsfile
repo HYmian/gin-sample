@@ -100,7 +100,7 @@ pipeline {
             }
             steps {
                 container("busybox") {
-                  sh 'echo "test this branch"'
+                  sh 'echo "test this branch! "'
                 }
             }
         }
