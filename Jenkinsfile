@@ -58,7 +58,6 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
-                    git url: 'https://github.com/HYmian/gin-sample.git'
                     sh """
                     go build
                     """
@@ -75,7 +74,10 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to pro') {
+            when {
+              branch "master"
+            }
             steps {
                 container("kubectl") {
                     withKubeConfig(
@@ -88,6 +90,17 @@ pipeline {
                         sh 'kubectl apply -f `pwd`/deploy.yaml'
                         sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
                     }
+                }
+            }
+        }
+
+        stage('Deploy other') {
+            when {
+              not { branch "master" }
+            }
+            steps {
+                container("busybox") {
+                  sh 'echo "test this branch! "'
                 }
             }
         }
