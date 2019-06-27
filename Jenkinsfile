@@ -14,7 +14,10 @@ pipeline {
                 k8s.aliyun.com/eci-memory: 4Gi
             spec:
               nodeSelector:
-              #  workload_type: spot
+                type: virtual-kubelet
+              tolerations:
+              - key: virtual-kubelet.io/provider
+                operator: Exists
               containers:
               - name: golang
                 image: golang:1.12
