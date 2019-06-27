@@ -58,7 +58,6 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
-//                    git url: 'https://github.com/HYmian/gin-sample.git'
                     sh """
                     go build
                     """
