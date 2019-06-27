@@ -13,11 +13,11 @@ pipeline {
                 k8s.aliyun.com/eci-cpu: 2
                 k8s.aliyun.com/eci-memory: 4Gi
             spec:
-#              nodeSelector:
-#                type: virtual-kubelet
-#              tolerations:
-#              - key: virtual-kubelet.io/provider
-#                operator: Exists
+              nodeSelector:
+                type: virtual-kubelet
+              tolerations:
+              - key: virtual-kubelet.io/provider
+                operator: Exists
               containers:
               - name: golang
                 image: golang:1.12
@@ -58,7 +58,7 @@ pipeline {
         stage('Build') {
             steps {
                 container('golang') {
-                    git url: 'https://github.com/HYmian/gin-sample.git'
+//                    git url: 'https://github.com/HYmian/gin-sample.git'
                     sh """
                     go build
                     """
@@ -75,7 +75,10 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to pro') {
+            when {
+              branch "master"
+            }
             steps {
                 container("kubectl") {
                     withKubeConfig(
@@ -87,6 +90,19 @@ pipeline {
                     ) {
                         sh 'kubectl apply -f `pwd`/deploy.yaml'
                         sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
+                    }
+                }
+            }
+        }
+
+        stage('Deploy other') {
+            when {
+              not { branch "master" }
+            }
+            steps {
+                container("busybox") {
+                    ) {
+                        sh 'echo "test this branch"'
                     }
                 }
             }
