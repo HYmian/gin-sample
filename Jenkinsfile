@@ -17,7 +17,7 @@ pipeline {
 #                type: virtual-kubelet
 #              tolerations:
 #              - key: virtual-kubelet.io/provider
-                operator: Exists
+#                operator: Exists
               containers:
               - name: golang
                 image: golang:1.12
