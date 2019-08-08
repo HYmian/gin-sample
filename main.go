@@ -4,7 +4,6 @@ import (
 	"flag"
 	"math/rand"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -43,10 +42,10 @@ func main() {
 	})
 
 	if *havedb {
-		host := "galera-lb"
-		user := os.Getenv("MYSQL_USER")
-		passwd := os.Getenv("MYSQL_PASSWORD")
-		database := os.Getenv("MYSQL_DATABASE")
+		// host := "galera-lb"
+		// user := os.Getenv("MYSQL_USER")
+		// passwd := os.Getenv("MYSQL_PASSWORD")
+		// database := os.Getenv("MYSQL_DATABASE")
 
 		r.GET("/", GetPages)
 		r.POST("/", PostPage)
@@ -81,7 +80,7 @@ func GetPages(c *gin.Context) {
 }
 
 func PostPage(c *gin.Context) {
-	pages := &Pages{}
+	// pages := &Pages{}
 	glog.Info(c.Request.RemoteAddr)
 
 	c.Status(http.StatusOK)
