@@ -125,7 +125,7 @@ pipeline {
             steps {
                 container("busybox") {
                     sh """
-                    x=`curl http://gin-sample.test.svc.cluster.local:3000/stress/3 -w '%{size_download}' -so /dev/null`;
+                    x=`curl http://gin-sample.test.svc.cluster.local:8080/stress/3 -w '%{size_download}' -so /dev/null`;
                     if [ $x -eq '3072' ]; then
                         exit 0;
                     else
