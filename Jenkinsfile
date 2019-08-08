@@ -87,8 +87,10 @@ pipeline {
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
                     ) {
-                        sh 'kubectl apply -f `pwd`/deploy.yaml -n pro'
-                        sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
+                        sh '''
+                        kubectl apply -f `pwd`/deploy.yaml -n pro
+                        kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n pro
+                        '''
                     }
                 }
             }
@@ -107,8 +109,10 @@ pipeline {
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
                     ) {
-                        sh 'kubectl apply -f `pwd`/deploy.yaml -n test'
-                        sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
+                        sh '''
+                        kubectl apply -f `pwd`/deploy.yaml -n test
+                        kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n test
+                        '''
                     }
                 }
             }
