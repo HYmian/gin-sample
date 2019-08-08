@@ -1,4 +1,4 @@
-FROM centos:7.6.180
+FROM centos:7.6.1810
 
 WORKDIR /var
 
