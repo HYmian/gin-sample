@@ -1,9 +1,8 @@
-FROM centos:7
+FROM centos:7.6.180
 
 WORKDIR /var
 
-ADD boot.sh .
 ADD gin-sample .
 ADD templates/* templates/
 
-CMD ["./boot.sh"]
+CMD ["./gin-sample", "-logtostderr", "-v 2"]

@@ -2,14 +2,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 
@@ -50,19 +48,6 @@ func main() {
 		passwd := os.Getenv("MYSQL_PASSWORD")
 		database := os.Getenv("MYSQL_DATABASE")
 
-		if err := orm.RegisterDataBase("default",
-			"mysql",
-			fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?charset=utf8",
-				user,
-				passwd,
-				host,
-				database,
-			),
-			30,
-		); err != nil {
-			glog.Fatalf("connect to mysql error: %s", err.Error())
-		}
-
 		r.GET("/", GetPages)
 		r.POST("/", PostPage)
 	}
@@ -92,42 +77,12 @@ func GetStress(c *gin.Context) {
 func GetPages(c *gin.Context) {
 	glog.Info(c.Request.RequestURI)
 
-	var maps []orm.Params
-	o := orm.NewOrm()
-	num, err := o.Raw("select title, item from page").Values(&maps)
-	if err != nil {
-		c.String(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	pages := &Pages{}
-	for i := int64(0); i < num; i++ {
-		p := &Page{
-			Title: maps[i]["title"].(string),
-			Item:  maps[i]["item"].(string),
-		}
-
-		pages.Pages = append(pages.Pages, p)
-	}
-
-	c.HTML(http.StatusOK, "index", pages)
+	c.Status(http.StatusOK)
 }
 
 func PostPage(c *gin.Context) {
 	pages := &Pages{}
 	glog.Info(c.Request.RemoteAddr)
-
-	o := orm.NewOrm()
-	for _, i := range pages.Pages {
-		if _, err := o.
-			Raw("insert into page(title, item) values(?, ?)").
-			SetArgs(i.Title, i.Item).
-			Exec(); err != nil {
-			glog.Errorf("insert page (%s, %s) error", i.Title, i.Item)
-			c.String(http.StatusInternalServerError, "insert page error")
-		}
-
-	}
 
 	c.Status(http.StatusOK)
 }
