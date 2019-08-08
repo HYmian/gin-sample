@@ -2,13 +2,13 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    app: webdemo
-  name: webdemo
+    app: gin-sample
+  name: gin-sample
 spec:
   replicas: 4
   selector:
     matchLabels:
-      app: webdemo
+      app: gin-sample
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -17,17 +17,17 @@ spec:
   template:
     metadata:
       labels:
-        app: webdemo
+        app: gin-sample
     spec:
       containers:
         # you can replace image to yours
-      - image: ymian/webdemo
+      - image: ymian/gin-sample
         imagePullPolicy: Always
-        name: webdemo
+        name: gin-sample
         ports:
         - containerPort: 3000
           protocol: TCP
-        resources: 
+        resources:
           limits:
             cpu: 1
           requests:
@@ -38,8 +38,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: webdemo
-  name: webdemo
+    app: gin-sample
+  name: gin-sample
 spec:
   ports:
   - name: http
@@ -47,4 +47,4 @@ spec:
     protocol: TCP
     targetPort: 3000
   selector:
-    app: webdemo
+    app: gin-sample
