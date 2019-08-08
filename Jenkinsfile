@@ -83,11 +83,11 @@ pipeline {
                     withKubeConfig(
                         [
                             // you can replace `mo` to yours
-                            credentialsId: 'm0',
+                            credentialsId: 'pro-env',
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
                     ) {
-                        sh 'kubectl apply -f `pwd`/deploy.yaml'
+                        sh 'kubectl apply -f `pwd`/deploy.yaml -n pro'
                         sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
                     }
                 }
@@ -99,17 +99,35 @@ pipeline {
               not { branch "master" }
             }
             steps {
-                container("busybox") {
-                  sh 'echo "test this branch! "'
+                container("kubectl") {
+                    withKubeConfig(
+                        [
+                            // you can replace `mo` to yours
+                            credentialsId: 'test-env',
+                            serverUrl: 'https://kubernetes.default.svc.cluster.local'
+                        ]
+                    ) {
+                        sh 'kubectl apply -f `pwd`/deploy.yaml -n test'
+                        sh 'kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s'
+                    }
                 }
             }
         }
 
         stage('Test') {
+            when {
+              not { branch "master" }
+            }
             steps {
                 container("busybox") {
                     sh """
-                    curl -d '{"message":"this is my first webhook"}' -H "Content-Type: application/json" -X POST webhook-gateway-svc.argo-events.svc.cluster.local:12000/foo
+                    x=`curl http://webdemo.default.svc.cluster.local:3000/stress/3 -w '%{size_download}' -so /dev/null`;
+                    if [ $x -eq '3072' ]; then
+                        exit 0;
+                    else
+                        echo x=$x;
+                        exit 1;
+                    fi
                     """
                 }
             }
