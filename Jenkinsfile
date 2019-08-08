@@ -59,7 +59,7 @@ pipeline {
             steps {
                 container('golang') {
                     sh """
-                    go build
+                    go build -mod vendor -v
                     """
                 }
             }
@@ -83,7 +83,7 @@ pipeline {
                     withKubeConfig(
                         [
                             // you can replace `mo` to yours
-                            credentialsId: 'm0', 
+                            credentialsId: 'm0',
                             serverUrl: 'https://kubernetes.default.svc.cluster.local'
                         ]
                     ) {
