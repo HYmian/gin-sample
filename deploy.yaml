@@ -5,7 +5,7 @@ metadata:
     app: gin-sample
   name: gin-sample
 spec:
-  replicas: 4
+  replicas: 2
   selector:
     matchLabels:
       app: gin-sample
