@@ -1,8 +1,10 @@
 FORM golang:1.14.3 AS build
 
-COPY ./* /go/src/github.com/HYmian/
+WORKDIR /go/src/github.com/HYmian/gin-sample
 
-RUN go build -mod vendor -v
+ADD ./ ./
+
+RUN go install -mod vendor -v
 
 FROM centos:7.6.1810
 
