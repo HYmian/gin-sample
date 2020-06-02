@@ -1,4 +1,4 @@
-FORM golang:1.14.3 AS build
+FROM golang:1.14.3 AS build
 
 WORKDIR /go/src/github.com/HYmian/gin-sample
 
@@ -10,6 +10,6 @@ FROM centos:7.6.1810
 
 WORKDIR /var/local/bin
 
-ADD --from=build gin-sample .
+COPY --from=build /go/bin/gin-sample .
 
 CMD ["./gin-sample", "-logtostderr", "-v", "2"]
