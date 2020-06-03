@@ -6,7 +6,7 @@ ADD ./ ./
 
 RUN go install -mod vendor -v
 
-FROM centos:8
+FROM centos:7.5.1804
 
 WORKDIR /var/local/bin
 
