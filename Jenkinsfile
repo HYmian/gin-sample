@@ -49,7 +49,7 @@ pipeline {
                   secretName: ymian
                   items:
                   - key: .dockerconfigjson
-                    path: .dockerconfigjson
+                    path: config.json
             """
         }
     }
