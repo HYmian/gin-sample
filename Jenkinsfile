@@ -69,7 +69,7 @@ pipeline {
             steps {
                 container("kaniko") {
                     // you can replace `--destination=ymian/gin-sample` to yours
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/gin-sample"
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d registry.cn-shenzhen.aliyuncs.com/ymian/gin-sample"
                 }
             }
         }
