@@ -146,6 +146,7 @@ def notifyBuild() {
   emailext (
       subject: subject,
       body: details,
+      to: 'gopher.mian@outlook.com',
       recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
     )
 }
