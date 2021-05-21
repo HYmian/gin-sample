@@ -54,79 +54,102 @@ pipeline {
         }
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                container('golang') {
-                    sh """
-                    go build -mod vendor -v
-                    """
+    try {
+        stages {
+            stage('Build') {
+                steps {
+                    container('golang') {
+                        sh """
+                        go build -mod vendor -v
+                        """
+                    }
                 }
             }
-        }
 
-        stage('Image Build And Publish') {
-            steps {
-                container("kaniko") {
-                    // you can replace `--destination=ymian/gin-sample` to yours
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/gin-sample"
+            stage('Image Build And Publish') {
+                steps {
+                    container("kaniko") {
+                        // you can replace `--destination=ymian/gin-sample` to yours
+                        sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/gin-sample"
+                    }
                 }
             }
-        }
 
-        stage('Deploy to pro') {
-            when {
-              branch "master"
+            stage('Deploy to pro') {
+                when {
+                branch "master"
+                }
+                steps {
+                    container("kubectl") {
+                        withKubeConfig(
+                            [
+                                // you can replace `mo` to yours
+                                credentialsId: 'pro-env',
+                                serverUrl: 'https://kubernetes.default.svc.cluster.local'
+                            ]
+                        ) {
+                            sh '''
+                            kubectl apply -f `pwd`/deploy/deploy.yaml -n pro
+                            kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n pro
+                            '''
+                        }
+                    }
+                }
             }
-            steps {
-                container("kubectl") {
-                    withKubeConfig(
-                        [
-                            // you can replace `mo` to yours
-                            credentialsId: 'pro-env',
-                            serverUrl: 'https://kubernetes.default.svc.cluster.local'
-                        ]
-                    ) {
-                        sh '''
-                        kubectl apply -f `pwd`/deploy/deploy.yaml -n pro
-                        kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n pro
-                        '''
+
+            stage('Deploy other') {
+                when {
+                not { branch "master" }
+                }
+                steps {
+                    container("kubectl") {
+                        withKubeConfig(
+                            [
+                                // you can replace `mo` to yours
+                                credentialsId: 'test-env',
+                                serverUrl: 'https://kubernetes.default.svc.cluster.local'
+                            ]
+                        ) {
+                            sh '''
+                            kubectl apply -f `pwd`/deploy/deploy.yaml -n test
+                            kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n test
+                            '''
+                        }
+                    }
+                }
+            }
+
+            stage('Test') {
+                when {
+                not { branch "master" }
+                }
+                steps {
+                    container("busybox") {
+                        sh "./validate.sh"
                     }
                 }
             }
         }
-
-        stage('Deploy other') {
-            when {
-              not { branch "master" }
-            }
-            steps {
-                container("kubectl") {
-                    withKubeConfig(
-                        [
-                            // you can replace `mo` to yours
-                            credentialsId: 'test-env',
-                            serverUrl: 'https://kubernetes.default.svc.cluster.local'
-                        ]
-                    ) {
-                        sh '''
-                        kubectl apply -f `pwd`/deploy/deploy.yaml -n test
-                        kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n test
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Test') {
-            when {
-              not { branch "master" }
-            }
-            steps {
-                container("busybox") {
-                    sh "./validate.sh"
-                }
-            }
-        }
+    } catch (e) {
+      currentBuild.result = "FAILED"
+      throw e
+    } finally {
+      notifyBuild(currentBuild.result)
     }
+}
+
+
+def notifyBuild(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus = buildStatus ?: 'SUCCESS'
+
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+
+  emailext (
+      subject: subject,
+      body: details,
+      recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
+    )
 }
