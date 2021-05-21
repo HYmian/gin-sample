@@ -147,7 +147,7 @@ def notifyBuild() {
       subject: subject,
       mimeType: 'text/html',
 //       body: details,
-      body: '${JELLY_SCRIPT,template=”html”}',
+      body: "${JELLY_SCRIPT,template='html'}",
       to: 'gopher.mian@outlook.com',
       recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
     )
