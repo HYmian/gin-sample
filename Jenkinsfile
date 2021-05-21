@@ -126,14 +126,18 @@ pipeline {
                 container("busybox") {
                     sh "./validate.sh"
                 }
-                currentBuild.result = 'SUCCESS'
             }
         }
     }
 
-    post { 
+    post {
+        failure {
+            currentBuild.result = 'FAILED'
+        }
+        success {
+            currentBuild.result = 'SUCCESS'
+        }
         always {
-            currentBuild.result = currentBuild.result == 'SUCCESS' ? currentBuild.result : 'FAILED'
             notifyBuild(currentBuild.result)
         }
     }
