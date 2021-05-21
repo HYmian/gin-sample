@@ -146,7 +146,8 @@ def notifyBuild() {
   emailext (
       subject: subject,
       mimeType: 'text/html',
-      body: '${JELLY_SCRIPT,template=”html”}',
+      body: details,
+//      body: '${JELLY_SCRIPT,template=”html”}',
       to: 'gopher.mian@outlook.com',
       recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
     )
