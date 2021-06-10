@@ -76,7 +76,7 @@ pipeline {
 
         stage('Deploy to pro') {
             when {
-              branch "master"
+            branch "master"
             }
             steps {
                 container("kubectl") {
@@ -98,7 +98,7 @@ pipeline {
 
         stage('Deploy other') {
             when {
-              not { branch "master" }
+            not { branch "master" }
             }
             steps {
                 container("kubectl") {
@@ -120,7 +120,7 @@ pipeline {
 
         stage('Test') {
             when {
-              not { branch "master" }
+            not { branch "master" }
             }
             steps {
                 container("busybox") {
@@ -129,4 +129,26 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            notifyBuild()
+        }
+    }
+}
+
+
+def notifyBuild() {
+  def subject = "${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+
+  emailext (
+      subject: subject,
+      mimeType: 'text/html',
+//       body: details,
+      body: '''${JELLY_SCRIPT, template="html"}''',
+      to: 'gopher.mian@outlook.com',
+      recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
+    )
 }
