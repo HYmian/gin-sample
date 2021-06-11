@@ -4,6 +4,7 @@ import (
 	"flag"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -31,7 +32,7 @@ func main() {
 	})
 
 	r.GET("/stress/:value", GetStress)
-	r.GET("/ip", GetIP)
+	r.GET("/sign", GetSign)
 	r.POST("/flagger/traffic-increase", flaggerTrafficIncrease)
 	r.PUT("/flagger/traffic-increase", AllowTrafficIncrease)
 
@@ -56,8 +57,12 @@ func GetStress(c *gin.Context) {
 	c.String(http.StatusOK, string(bs))
 }
 
-func GetIP(c *gin.Context) {
-	c.String(http.StatusOK, c.Request.RemoteAddr)
+func GetSign(c *gin.Context) {
+	if hostname, err := os.Hostname(); err != nil {
+		c.String(http.StatusInternalServerError, "unknown host")
+	} else {
+		c.String(http.StatusOK, hostname)
+	}
 }
 
 func flaggerTrafficIncrease(c *gin.Context) {
