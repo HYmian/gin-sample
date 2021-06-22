@@ -48,7 +48,7 @@ pipeline {
                   # you can replace secret to yours
                   secretName: ymian
                   items:
-                  - key: config.json
+                  - key: .dockerconfigjson
                     path: config.json
             """
         }
@@ -69,7 +69,7 @@ pipeline {
             steps {
                 container("kaniko") {
                     // you can replace `--destination=ymian/gin-sample` to yours
-                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d ymian/gin-sample"
+                    sh "kaniko -f `pwd`/Dockerfile -c `pwd` -d registry.cn-shenzhen.aliyuncs.com/ymian/gin-sample"
                 }
             }
         }
