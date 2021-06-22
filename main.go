@@ -4,26 +4,16 @@ import (
 	"flag"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
-type Pages struct {
-	Pages []*Page `json:"pages" binding:"required"`
-}
-
-type Page struct {
-	Title string `json:"title" binding:"required"`
-	Item  string `json:"item" binding:"required"`
-}
-
 var (
-	havedb = flag.Bool("havedb", false, "demo connect to a DB if true")
+	allowTrafficIncrease bool = false
 )
 
 func init() {
@@ -31,8 +21,8 @@ func init() {
 }
 
 func main() {
-	defer glog.Flush()
 	flag.Parse()
+	defer glog.Flush()
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
@@ -41,16 +31,10 @@ func main() {
 		})
 	})
 
-	if *havedb {
-		// host := "galera-lb"
-		// user := os.Getenv("MYSQL_USER")
-		// passwd := os.Getenv("MYSQL_PASSWORD")
-		// database := os.Getenv("MYSQL_DATABASE")
-
-		r.GET("/", GetPages)
-		r.POST("/", PostPage)
-	}
 	r.GET("/stress/:value", GetStress)
+	r.GET("/sign", GetSign)
+	r.POST("/flagger/traffic-increase", flaggerTrafficIncrease)
+	r.PUT("/flagger/traffic-increase", AllowTrafficIncrease)
 
 	r.Run("0.0.0.0:8080")
 }
@@ -67,21 +51,28 @@ func GetStress(c *gin.Context) {
 
 	bs := make([]byte, iv)
 	for i := uint64(0); i < iv; i++ {
-		bs[i] = byte(rand.Intn(95) + 32)
+		bs[i] = byte(rand.Intn(94) + 33)
 	}
 
 	c.String(http.StatusOK, string(bs))
 }
 
-func GetPages(c *gin.Context) {
-	glog.Info(c.Request.RequestURI)
-
-	c.Status(http.StatusOK)
+func GetSign(c *gin.Context) {
+	if hostname, err := os.Hostname(); err != nil {
+		c.String(http.StatusInternalServerError, "unknown host")
+	} else {
+		c.String(http.StatusOK, hostname)
+	}
 }
 
-func PostPage(c *gin.Context) {
-	// pages := &Pages{}
-	glog.Info(c.Request.RemoteAddr)
+func flaggerTrafficIncrease(c *gin.Context) {
+	if allowTrafficIncrease {
+		c.Status(http.StatusOK)
+	} else {
+		c.Status(http.StatusForbidden)
+	}
+}
 
-	c.Status(http.StatusOK)
+func AllowTrafficIncrease(c *gin.Context) {
+	allowTrafficIncrease = (c.Query("allow") == "true")
 }

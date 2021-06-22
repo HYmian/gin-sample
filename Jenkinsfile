@@ -76,7 +76,7 @@ pipeline {
 
         stage('Deploy to pro') {
             when {
-              branch "master"
+            branch "master"
             }
             steps {
                 container("kubectl") {
@@ -88,7 +88,7 @@ pipeline {
                         ]
                     ) {
                         sh '''
-                        kubectl apply -f `pwd`/deploy.yaml -n pro
+                        kubectl apply -f `pwd`/deploy/deploy.yaml -n pro
                         kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n pro
                         '''
                     }
@@ -98,7 +98,7 @@ pipeline {
 
         stage('Deploy other') {
             when {
-              not { branch "master" }
+            not { branch "master" }
             }
             steps {
                 container("kubectl") {
@@ -110,7 +110,7 @@ pipeline {
                         ]
                     ) {
                         sh '''
-                        kubectl apply -f `pwd`/deploy.yaml -n test
+                        kubectl apply -f `pwd`/deploy/deploy.yaml -n test
                         kubectl wait --for=condition=Ready pod -l app=gin-sample --timeout=60s -n test
                         '''
                     }
@@ -120,7 +120,7 @@ pipeline {
 
         stage('Test') {
             when {
-              not { branch "master" }
+            not { branch "master" }
             }
             steps {
                 container("busybox") {
@@ -129,4 +129,26 @@ pipeline {
             }
         }
     }
+
+    post {
+        always {
+            notifyBuild()
+        }
+    }
+}
+
+
+def notifyBuild() {
+  def subject = "${currentBuild.result}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>"""
+
+  emailext (
+      subject: subject,
+      mimeType: 'text/html',
+//       body: details,
+      body: '''${JELLY_SCRIPT, template="html"}''',
+      to: 'gopher.mian@outlook.com',
+      recipientProviders: [developers(), buildUser(), requestor(), upstreamDevelopers()]
+    )
 }

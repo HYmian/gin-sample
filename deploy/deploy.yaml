@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: gin-sample
+  name: gin-sample
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gin-sample
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: gin-sample
+    spec:
+      containers:
+        # you can replace image to yours
+      - image: ymian/gin-sample
+        imagePullPolicy: Always
+        name: gin-sample
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1
+          requests:
+            cpu: 1
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: gin-sample
+  name: gin-sample
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: gin-sample
