@@ -14,6 +14,7 @@ import (
 
 var (
 	allowTrafficIncrease bool = false
+	allowRollback             = false
 )
 
 func init() {
@@ -35,6 +36,8 @@ func main() {
 	r.GET("/sign", GetSign)
 	r.POST("/flagger/traffic-increase", flaggerTrafficIncrease)
 	r.PUT("/flagger/traffic-increase", AllowTrafficIncrease)
+	r.POST("/flagger/rollback", flaggerRollback)
+	r.PUT("/flagger/rollback", AllowRollback)
 
 	r.Run("0.0.0.0:8080")
 }
@@ -75,4 +78,16 @@ func flaggerTrafficIncrease(c *gin.Context) {
 
 func AllowTrafficIncrease(c *gin.Context) {
 	allowTrafficIncrease = (c.Query("allow") == "true")
+}
+
+func flaggerRollback(c *gin.Context) {
+	if allowRollback {
+		c.Status(http.StatusOK)
+	} else {
+		c.Status(http.StatusForbidden)
+	}
+}
+
+func AllowRollback(c *gin.Context) {
+	allowRollback = (c.Query("allow") == "true")
 }
