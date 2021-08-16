@@ -34,6 +34,8 @@ func main() {
 
 	r.GET("/stress/:value", GetStress)
 	r.GET("/sign", GetSign)
+	r.GET("/header", GetHeader)
+
 	r.POST("/flagger/traffic-increase", flaggerTrafficIncrease)
 	r.PUT("/flagger/traffic-increase", AllowTrafficIncrease)
 	r.POST("/flagger/rollback", flaggerRollback)
@@ -65,6 +67,12 @@ func GetSign(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "unknown host")
 	} else {
 		c.String(http.StatusOK, hostname)
+	}
+}
+
+func GetHeader(c *gin.Context) {
+	for k, v := range c.Request.Header {
+		glog.Infof("key = %s, value = %s", k, v)
 	}
 }
 
